@@ -2,3 +2,4 @@
 .terraform*
 variable.tf
 output.tf
+probando.pem
