@@ -1,41 +1,22 @@
 provider "aws" {
   version = "~> 2.7"
-  region  = "us-east-1"
+  region  = "us-east-2"
 }
 
-data "aws_vpc" "selected" {
-  id = "${var.vpc_id}"
-}
-
-data "aws_subnet" "selected" {
-  id = var.subnet_id
-}
 resource "aws_instance" "web" {
-  ami = "ami-0ac80df6eff0e70b5"
-  subnet_id = data.aws_subnet.selected.id
+  count = 2
+  ami = "ami-00399ec92321828f5"
   instance_type = "t2.micro"
-  security_groups = [aws_security_group.allow-ssh-all-test.id]
-  key_name = var.key_pair_name
   tags = {
-    Name = "Terra-test2"
-  }  
-}
-resource "aws_security_group" "allow-ssh-all-test" {
-name = "allow-ssh-all-test"
-vpc_id = data.aws_vpc.selected.id
-ingress {
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
+    Name = "devops-2104"
   }
-
-  egress {
-   from_port = 0
-   to_port = 0
-   protocol = "-1"
-   cidr_blocks = ["0.0.0.0/0"]
- }
 }
+
+output "public_ip" {
+  value = "${aws_instance.web.*.public_ip}"
+}
+
+output "private_ip" {
+  value = "${aws_instance.web.*.private_ip}"
+}
+
